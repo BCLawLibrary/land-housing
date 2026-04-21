@@ -1,0 +1,17 @@
+.card {
+  display: flex;
+  flex-direction: row;
+  height: 100px;
+}
+
+.card-thumbnail img {
+  height: 100px;
+}
+
+.card-date {
+  font-size: 12px;
+}
+
+.card-title {
+  font-weight: bold;
+}

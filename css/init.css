@@ -1,0 +1,21 @@
+/* 
+    DO NOT UPLOAD THIS FILE TO BC AEM.
+    It is used to minimally style the test page
+    during development.
+*/
+
+* {
+  box-sizing: border-box;
+  font-family: "Open Sans" !important;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.PASTE_INNER_HTML_INTO_AEM {
+  padding: 0 12px;
+  max-width: 1230px;
+}
