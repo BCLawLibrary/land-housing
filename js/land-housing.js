@@ -31,6 +31,19 @@ async function convertDataToObject(url) {
   return CSVdata.data;
 }
 
+function formatDate(year, month, date) {
+  var parts = [month, date, year].filter(Boolean);
+  return parts.join("/");
+}
+
+function formatTitle(title, link) {
+  if (link != null) {
+    return `<a href="${link}">${title}</a>`;
+  } else {
+    return title;
+  }
+}
+
 function formatAuthors(authorship) {
   var authors = authorship.split(";");
   if (authors.length > 1) {
@@ -44,7 +57,16 @@ function formatAuthors(authorship) {
 
 function formatKeywords(keywords) {
   var keywords = keywords.split(";");
-  return `<div class="keywords"><div class="tag"><i class="fa-regular fa-bookmark"></i>${keywords.join('</div><div class="tag"><i class="fa-regular fa-bookmark"></i>')}</div></div>`;
+  return `<div class="keywords">
+            <div class="tag">
+              <i class="fa-regular fa-bookmark"></i>
+              ${keywords.join(`
+            </div>
+            <div class="tag">
+              <i class="fa-regular fa-bookmark"></i>`)}
+            </div>
+          </div>
+        `;
 }
 
 function initializeTable(data) {
@@ -69,10 +91,10 @@ function initializeTable(data) {
           </div>
           <div class="card-text">
             <div class="card-date">
-              ${row.Month}/${row.Date}/${row.Year}
+              ${formatDate(row.Year, row.Month, row.Date)}
             </div>
             <div class="card-title">
-              ${row.Title}
+              ${formatTitle(row.Title, row.Link)}
             </div>
             <div class="card-authorship">
               ${formatAuthors(row.Authorship)}
@@ -85,6 +107,7 @@ function initializeTable(data) {
         `;
       },
     },
+    { title: "Priority", data: "Priority", visible: false },
   ];
 
   const table = new DataTable("#works__table", {
@@ -94,7 +117,7 @@ function initializeTable(data) {
     data: data,
     columns: custom_columns,
     order: [
-      [0, "asc"],
+      [10, "asc"],
       [4, "desc"],
       [5, "desc"],
       [6, "desc"],
