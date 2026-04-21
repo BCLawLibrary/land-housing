@@ -31,6 +31,22 @@ async function convertDataToObject(url) {
   return CSVdata.data;
 }
 
+function formatAuthors(authorship) {
+  var authors = authorship.split(";");
+  if (authors.length > 1) {
+    lastCoauthor = authors.pop();
+    formattedAuthors = `${authors.join(", ")} and ${lastCoauthor}`;
+  } else {
+    formattedAuthors = authorship;
+  }
+  return formattedAuthors;
+}
+
+function formatKeywords(keywords) {
+  var keywords = keywords.split(";");
+  return `<div class="keywords"><div class="tag"><i class="fa-regular fa-bookmark"></i>${keywords.join('</div><div class="tag"><i class="fa-regular fa-bookmark"></i>')}</div></div>`;
+}
+
 function initializeTable(data) {
   const custom_columns = [
     { title: "Section", data: "Section", visible: false },
@@ -59,10 +75,10 @@ function initializeTable(data) {
               ${row.Title}
             </div>
             <div class="card-authorship">
-              ${row.Authorship}
+              ${formatAuthors(row.Authorship)}
             </div>
             <div class="card-keywords">
-            ${row.Keywords}
+            ${formatKeywords(row.Keywords)}
             </div>
           </div>
         </div>
@@ -78,9 +94,10 @@ function initializeTable(data) {
     data: data,
     columns: custom_columns,
     order: [
-      [3, "desc"],
-      [1, "asc"],
       [0, "asc"],
+      [4, "desc"],
+      [5, "desc"],
+      [6, "desc"],
     ],
     rowGroup: { dataSrc: "Section" }, // relies on RowGroup extension
   });
