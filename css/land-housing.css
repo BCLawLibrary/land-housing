@@ -1,3 +1,15 @@
+.wrapper__loading {
+  width: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.loading {
+  width: 50px;
+}
+
 thead {
   display: none;
 }
@@ -5,7 +17,7 @@ thead {
 tr.dtrg-group th {
   display: block;
   background-color: transparent !important;
-  font-size: 1.5rem;
+  font-size: 2rem !important;
   margin: 1.5rem 0;
 }
 
@@ -53,8 +65,4 @@ td {
   margin-right: 10px;
   font-size: 12px;
   color: gray;
-}
-.card .fa-bookmark {
-  margin-right: 5px;
-  font-size: 10px;
 }

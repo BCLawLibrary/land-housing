@@ -12,32 +12,28 @@ async function fetchCSVData(url) {
   }
 }
 
-function formatWork(rowData) {
-  let [
-    Section,
-    Authorship,
-    Title,
-    Keywords,
-    Year,
-    Month,
-    Date,
-    Thumbnail,
-    Link,
-  ] = rowData;
-}
-
 async function convertDataToObject(url) {
   const CSVdata = await fetchCSVData(url);
   return CSVdata.data;
 }
 
-function formatDate(year, month, date) {
+function isRenderable(row) {
+  // Only render rows that have all of these fields
+  return (
+    row.Priority && row.Section && row.Title && row.Thumbnail && row.Authorship
+  );
+}
+
+// Another package somewhere in the codebase
+// already has formatDate. I spent 30 minutes
+// debugging this!
+function myUniqueFormatDate(year, month, date) {
   var parts = [month, date, year].filter(Boolean);
   return parts.join("/");
 }
 
 function formatTitle(title, link) {
-  if (link != null) {
+  if (link) {
     return `<a href="${link}">${title}</a>`;
   } else {
     return title;
@@ -56,21 +52,28 @@ function formatAuthors(authorship) {
 }
 
 function formatKeywords(keywords) {
-  var keywords = keywords.split(";");
-  return `<div class="keywords">
+  // fa-genderless = circle icon in Font Awesome
+  var keywords = keywords.split(";").map((item) => item.trim());
+  if (keywords.length == 1 && keywords[0] === "") {
+    return "";
+  } else {
+    return `<div class="keywords">
             <div class="tag">
-              <i class="fa-regular fa-bookmark"></i>
+              <i class="fa-solid fa-genderless"></i> 
               ${keywords.join(`
             </div>
             <div class="tag">
-              <i class="fa-regular fa-bookmark"></i>`)}
+              <i class="fa-solid fa-genderless"></i>
+            `)}
             </div>
           </div>
         `;
+  }
 }
 
 function initializeTable(data) {
   const custom_columns = [
+    { title: "Priority", data: "Priority", visible: false },
     { title: "Section", data: "Section", visible: false },
     { title: "Authorship", data: "Authorship", visible: false },
     { title: "Title", data: "Title", visible: false },
@@ -91,7 +94,7 @@ function initializeTable(data) {
           </div>
           <div class="card-text">
             <div class="card-date">
-              ${formatDate(row.Year, row.Month, row.Date)}
+              ${myUniqueFormatDate(row.Year, row.Month, row.Date)}
             </div>
             <div class="card-title">
               ${formatTitle(row.Title, row.Link)}
@@ -107,7 +110,6 @@ function initializeTable(data) {
         `;
       },
     },
-    { title: "Priority", data: "Priority", visible: false },
   ];
 
   const table = new DataTable("#works__table", {
@@ -117,10 +119,11 @@ function initializeTable(data) {
     data: data,
     columns: custom_columns,
     order: [
-      [10, "asc"],
-      [4, "desc"],
-      [5, "desc"],
-      [6, "desc"],
+      [0, "asc"], // Priority
+      [5, "desc"], // Year
+      [6, "desc"], // Month
+      [7, "desc"], // Date
+      [3, "asc"], // Title
     ],
     rowGroup: { dataSrc: "Section" }, // relies on RowGroup extension
   });
@@ -134,9 +137,10 @@ $(document).ready(function () {
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vSvcazCOMPpKONojpgN19KIaqRBEApjYaeyHdB3DKDC9QI8TyWBTMki-vw4fPCHt2HfUQYX-gfj8DUM/pub?gid=0&single=true&output=csv";
     const data = await convertDataToObject(url);
 
-    var table = initializeTable(data);
+    const renderableData = await data.filter(isRenderable);
+    var table = initializeTable(renderableData);
 
-    $(".policies__loading").hide();
+    $(".wrapper__loading").hide();
   }
 
   main();
